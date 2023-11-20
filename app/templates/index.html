@@ -2,19 +2,16 @@
 
 {% block title %}Home{% endblock %}
 
+{% block header %}
+
+<h1>The Cocktail Lounge</h1>
+
+{% endblock %}
+
 {% block content %}
-    <div class="col-12"></div>
-        <div class="card mb-3">
-            <div class="row g-0">
-                <div class="col-md-4">
-                    <img src="{{ data['drinks'][0]['strDrinkThumb'] }}" alt="">
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title">Drink</h5>
-                        <p class="card-text"> {{ data['drinks'][0]['strDrink'] }}</p>
-                    </div>
-                </div>
-            </div>
+    {% for d in data %}
+        <div class="col-4">
+            <img class="homeImage"src="{{d['strDrinkThumb']}}" alt="An Old Fashioned cocktail">
         </div>
+    {% endfor %}
 {% endblock %}

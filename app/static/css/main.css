@@ -1,0 +1,18 @@
+body {
+    background-color: black;
+    color: white;
+}
+
+.myNavbar {
+    background-color:  black !important;
+    color: white;
+}
+
+.navbar-brand, .nav-link, .navbar {
+    color: white !important;
+}
+
+img {
+    max-width: 250px;
+    max-height: 250px;
+}
