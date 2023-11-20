@@ -1,7 +1,7 @@
 import random
 import os
 import base64
-from app import db
+from app import db, login
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -35,3 +35,7 @@ class User(db.Model, UserMixin):
         self.token_expiration = now + timedelta(days=1)
         db.session.commit()
         return self.token
+    
+@login.user_loader
+def get_user(user_id):
+    return db.session.get(User, user_id)

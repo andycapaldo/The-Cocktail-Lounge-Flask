@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In{% endblock %}
+
+{% block header %}
+    <h1>Log In Here</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="col">
+        <div class="card mt-3">
+            <div class="card-body">
+                <form action="" method="post">
+                    {{ form.csrf_token }}
+
+                    {{ form.username.label }}
+                    {{ form.username(class='form-control', placeholder='Enter Username') }}
+
+                    {{ form.password.label }}
+                    {{ form.password(class='form-control', placeholder='Enter Password') }}
+
+                    {{ form.remember_me(class='form-check-input') }}
+                    {{ form.remember_me.label }}
+
+                    {{ form.submit(class='btn btn-outline-primary mt-3 w-100') }}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
