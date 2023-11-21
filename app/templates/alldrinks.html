@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}All Drinks{% endblock %}
+
+{% block header %}
+
+<h1>All Cocktails</h1>
+
+{% endblock %}
+
+{% block content %}
+{% for d in data %}
+    <div class="card m-3" style="width: 18rem; background-color: black; color: white">
+        <img src="{{ d['strDrinkThumb']}}" class="card-img-top" alt="Image of a cocktail">
+        <div class="card-body">
+            <h5 class="card-title">{{ d['strDrink'] }}</h5>
+            <a href="#" class="btn btn-primary">View More</a>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}

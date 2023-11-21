@@ -8,8 +8,8 @@ from app.models import User
 
 @app.route('/')
 def index():
-    cocktail_res = requests.get('https://www.thecocktaildb.com/api/json/v1/1/search.php?f=a')
-    data = cocktail_res.json()['drinks']
+    response = requests.get(f'https://www.thecocktaildb.com/api/json/v2/9973533/filter.php?a=Alcoholic')
+    data = response.json()['drinks']
     return render_template('index.html', data=data)
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -65,3 +65,17 @@ def logout():
     logout_user()
     flash('You have successfully logged out')
     return redirect(url_for('index'))
+
+@app.route('/alldrinks')
+def alldrinks():
+    response = requests.get('https://www.thecocktaildb.com/api/json/v2/9973533/filter.php?a=Alcoholic')
+    data = response.json()['drinks']
+    return render_template('alldrinks.html', data=data)
+
+
+
+@app.route('/cocktails/<drink_id>')
+def cocktail_view(drink_id):
+    response = requests.get(f'https://www.thecocktaildb.com/api/json/v2/9973533/lookup.php?i={drink_id}')
+    data = response.json()['drinks']
+    return render_template('cocktail.html', data=data)

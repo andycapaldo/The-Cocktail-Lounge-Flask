@@ -10,8 +10,8 @@
 
 {% block content %}
     {% for d in data %}
-        <div class="col-4">
-            <img class="homeImage"src="{{d['strDrinkThumb']}}" alt="An Old Fashioned cocktail">
+        <div class="col-2">
+            <img class="homeImage"src="{{ d['strDrinkThumb']}}" alt="A cocktail">
         </div>
     {% endfor %}
 {% endblock %}
