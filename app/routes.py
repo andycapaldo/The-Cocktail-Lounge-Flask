@@ -66,16 +66,19 @@ def logout():
     flash('You have successfully logged out')
     return redirect(url_for('index'))
 
-@app.route('/alldrinks')
-def alldrinks():
+@app.route('/cocktails')
+def cocktails():
     response = requests.get('https://www.thecocktaildb.com/api/json/v2/9973533/filter.php?a=Alcoholic')
     data = response.json()['drinks']
-    return render_template('alldrinks.html', data=data)
+    return render_template('cocktails.html', data=data)
 
 
 
 @app.route('/cocktails/<drink_id>')
 def cocktail_view(drink_id):
     response = requests.get(f'https://www.thecocktaildb.com/api/json/v2/9973533/lookup.php?i={drink_id}')
-    data = response.json()['drinks']
-    return render_template('cocktail.html', data=data)
+    data = response.json()['drinks'][0]
+    res = {k:v for k,v in data.items() if v is not None}
+    ingredients = ['strIngredient1', 'strIngredient2', 'strIngredient3', 'strIngredient4', 'strIngredient5', 'strIngredient6', 'strIngredient7', 'strIngredient8', 'strIngredient9', 'strIngredient10', 'strIngredient11', 'strIngredient12', 'strIngredient13', 'strIngredient14', 'strIngredient15']
+    measures = ['strMeasure1', 'strMeasure2', 'strMeasure3', 'strMeasure4', 'strMeasure5', 'strMeasure6', 'strMeasure7', 'strMeasure8', 'strMeasure9', 'strMeasure10', 'strMeasure11', 'strMeasure12', 'strMeasure13', 'strMeasure14', 'strMeasure15']
+    return render_template('cocktail.html', res=res, ingredients=ingredients, measures=measures)

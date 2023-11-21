@@ -10,11 +10,11 @@
 
 {% block content %}
 {% for d in data %}
-    <div class="card m-3" style="width: 18rem; background-color: black; color: white">
+    <div class="card m-3" style="width: 18rem; background-color: black; color: #B0B0B0">
         <img src="{{ d['strDrinkThumb']}}" class="card-img-top" alt="Image of a cocktail">
         <div class="card-body">
             <h5 class="card-title">{{ d['strDrink'] }}</h5>
-            <a href="#" class="btn btn-primary">View More</a>
+            <a href="{{ url_for('cocktail_view', drink_id=d.idDrink)}}" class="btn btn-2">View Details</a>
         </div>
     </div>
 {% endfor %}

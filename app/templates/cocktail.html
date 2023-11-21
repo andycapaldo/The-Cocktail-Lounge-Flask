@@ -2,8 +2,33 @@
 
 {% block title %}All Drinks{% endblock %}
 
+
 {% block header %}
+    <h1>{{ res.get('strDrink') }}</h1>
+{% endblock %}
 
-<h1>All Cocktails</h1>
-
+{% block content %}
+    <div class="col-12 d-flex justify-content-center cocktailViewImg">
+        <img src="{{ res.get('strDrinkThumb' )}}" alt="">
+    </div>
+    <div class="col-12 d-flex justify-content-center mt-5">
+        <h4 class = 'me-3'>Ingredients</h4>
+        <ul>
+            {% for k,v in res.items() %}
+                {% if k in ingredients %}
+                    <li>{{ v }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <ul style="list-style-type: none;">
+            {% for k, v in res.items() %}
+                {% if k in measures %}
+                    <li>{{ v }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-12 d-flex justify-content-center mt-5">
+        <h4>Instructions: {{ res.get('strInstructions') }}</h4>
+    </div>
 {% endblock %}
