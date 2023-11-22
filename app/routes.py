@@ -68,8 +68,11 @@ def logout():
 
 @app.route('/cocktails')
 def cocktails():
-    response = requests.get('https://www.thecocktaildb.com/api/json/v2/9973533/filter.php?a=Alcoholic')
-    data = response.json()['drinks']
+    alcoholic= requests.get('https://www.thecocktaildb.com/api/json/v2/9973533/filter.php?a=Alcoholic')
+    non_alcoholic= requests.get('https://www.thecocktaildb.com/api/json/v2/9973533/filter.php?a=Non_Alcoholic')
+    drinks_one = alcoholic.json()['drinks']
+    drinks_two = non_alcoholic.json()['drinks']
+    data = sorted((drinks_one + drinks_two), key=lambda x: x['strDrink'])
     return render_template('cocktails.html', data=data)
 
 
