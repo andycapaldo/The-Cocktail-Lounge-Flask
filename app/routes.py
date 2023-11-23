@@ -2,7 +2,7 @@ import requests
 from app import app, db
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
-from app.forms import SignUpForm, LoginForm
+from app.forms import SignUpForm, LoginForm, DrinkForm
 from app.models import User
 
 
@@ -85,3 +85,40 @@ def cocktail_view(drink_id):
     ingredients = ['strIngredient1', 'strIngredient2', 'strIngredient3', 'strIngredient4', 'strIngredient5', 'strIngredient6', 'strIngredient7', 'strIngredient8', 'strIngredient9', 'strIngredient10', 'strIngredient11', 'strIngredient12', 'strIngredient13', 'strIngredient14', 'strIngredient15']
     measures = ['strMeasure1', 'strMeasure2', 'strMeasure3', 'strMeasure4', 'strMeasure5', 'strMeasure6', 'strMeasure7', 'strMeasure8', 'strMeasure9', 'strMeasure10', 'strMeasure11', 'strMeasure12', 'strMeasure13', 'strMeasure14', 'strMeasure15']
     return render_template('cocktail.html', res=res, ingredients=ingredients, measures=measures)
+
+
+
+@app.route('/create-drink', methods=['GET', 'POST'])
+@login_required
+def create_drink():
+    form = DrinkForm()
+    if form.validate_on_submit():
+            drink_name = form.drink_name.data
+            glass_type = form.glass_type.data
+            ingredient_1 = form.ingredient_1.data
+            measure_1 = form.measure_1.data
+            ingredient_2 = form.ingredient_2.data
+            measure_2 = form.measure_2.data
+            ingredient_3 = form.ingredient_3.data
+            measure_3 = form.measure_3.data
+            ingredient_4 = form.ingredient_4.data
+            measure_4 = form.measure_4.data
+            ingredient_5 = form.ingredient_5.data
+            measure_5 = form.measure_5.data
+            ingredient_6 = form.ingredient_6.data
+            measure_6 = form.measure_6.data
+            ingredient_7 = form.ingredient_7.data
+            measure_7 = form.measure_7.data
+            ingredient_8 = form.ingredient_8.data
+            measure_8 = form.measure_8.data
+            ingredient_9 = form.ingredient_9.data
+            measure_9 = form.measure_9.data
+            ingredient_10 = form.ingredient_10.data
+            measure_10 = form.measure_10.data
+            instructions = form.instructions.data
+            image_url = form.image_url.data
+            drink_type = form.drink_type.data
+            
+            flash(f"{drink_name} has been created!")
+            return redirect(url_for('index'))
+    return render_template('create_drink.html', form=form)

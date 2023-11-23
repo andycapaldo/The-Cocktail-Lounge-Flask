@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In{% endblock %}
+
+{% block header %}
+    <h1>Create a Cocktail</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="col-12">
+        <div class="card mt-3">
+            <div class="card-body">
+                <form action="" method="post">
+                    {{ form.csrf_token }}
+
+                    {{ form.drink_name.label }}
+                    {{ form.drink_name(class='form-control', placeholder='Enter Name of Cocktail') }}
+
+                    {{ form.glass_type.label }}
+                    {{ form.glass_type(class='form-control', placeholder='Enter Preferred Glass Type for this Cocktail') }}
+
+                    {{ form.ingredient_1.label }}
+                    {{ form.ingredient_1(class='form-control', placeholder='Enter Ingredient #1') }}
+
+                    {{ form.measure_1.label }}
+                    {{ form.measure_1(class='form-control', placeholder='Enter Measure of above Ingredient') }}
+
+                    {{ form.ingredient_2.label }}
+                    {{ form.ingredient_2(class='form-control', placeholder='Enter Ingredient #2') }}
+
+                    {{ form.measure_2.label }}
+                    {{ form.measure_2(class='form-control', placeholder='Enter Measure of above Ingredient') }}
+
+                    {{ form.ingredient_3.label }}
+                    {{ form.ingredient_3(class='form-control', placeholder='Enter Ingredient #3 (If Applicable)') }}
+
+                    {{ form.measure_3.label }}
+                    {{ form.measure_3(class='form-control', placeholder='Enter Measure of above Ingredient (If Applicable)') }}
+
+                    {{ form.ingredient_4.label }}
+                    {{ form.ingredient_4(class='form-control', placeholder='Enter Ingredient #4 (If Applicable)') }}
+
+                    {{ form.measure_4.label }}
+                    {{ form.measure_4(class='form-control', placeholder='Enter Measure of above Ingredient (If Applicable)') }}
+
+                    {{ form.ingredient_5.label }}
+                    {{ form.ingredient_5(class='form-control', placeholder='Enter Ingredient #5 (If Applicable)') }}
+
+                    {{ form.measure_5.label }}
+                    {{ form.measure_5(class='form-control', placeholder='Enter Measure of above Ingredient (If Applicable)') }}
+
+                    {{ form.ingredient_6.label }}
+                    {{ form.ingredient_6(class='form-control', placeholder='Enter Ingredient #6 (If Applicable)') }}
+
+                    {{ form.measure_6.label }}
+                    {{ form.measure_6(class='form-control', placeholder='Enter Measure of above Ingredient (If Applicable)') }}
+
+                    {{ form.ingredient_7.label }}
+                    {{ form.ingredient_7(class='form-control', placeholder='Enter Ingredient #7 (If Applicable)') }}
+
+                    {{ form.measure_7.label }}
+                    {{ form.measure_7(class='form-control', placeholder='Enter Measure of above Ingredient (If Applicable)') }}
+
+                    {{ form.ingredient_8.label }}
+                    {{ form.ingredient_8(class='form-control', placeholder='Enter Ingredient #8 (If Applicable)') }}
+
+                    {{ form.measure_8.label }}
+                    {{ form.measure_8(class='form-control', placeholder='Enter Measure of above Ingredient (If Applicable)') }}
+
+                    {{ form.ingredient_9.label }}
+                    {{ form.ingredient_9(class='form-control', placeholder='Enter Ingredient #9 (If Applicable)') }}
+
+                    {{ form.measure_9.label }}
+                    {{ form.measure_9(class='form-control', placeholder='Enter Measure of above Ingredient (If Applicable)') }}
+
+                    {{ form.ingredient_10.label }}
+                    {{ form.ingredient_10(class='form-control', placeholder='Enter Ingredient #10 (If Applicable)') }}
+
+                    {{ form.measure_10.label }}
+                    {{ form.measure_10(class='form-control', placeholder='Enter Measure of above Ingredient (If Applicable)') }}
+
+                    {{ form.instructions.label }}
+                    {{ form.instructions(class='form-control', placeholder='Enter Recipe Instructions') }}
+
+                    {{ form.image_url.label }}
+                    {{ form.image_url(class='form-control', placeholder='Enter Image URL')}}
+
+                    {{ form.drink_type(class='form-check-input') }}
+                    {{ form.drink_type.label }}
+
+                    {{ form.submit(class='btn btn-outline-primary mt-3 w-100') }}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
