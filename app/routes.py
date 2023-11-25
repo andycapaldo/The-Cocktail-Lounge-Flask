@@ -3,7 +3,7 @@ from app import app, db
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app.forms import SignUpForm, LoginForm, DrinkForm
-from app.models import User
+from app.models import User, Cocktail
 
 
 @app.route('/')
@@ -118,7 +118,26 @@ def create_drink():
             instructions = form.instructions.data
             image_url = form.image_url.data
             drink_type = form.drink_type.data
+
+            new_drink = Cocktail( drink_name=drink_name, glass_type=glass_type, ingredient_1=ingredient_1, measure_1=measure_1, ingredient_2=ingredient_2, measure_2=measure_2, ingredient_3=ingredient_3, measure_3=measure_3, ingredient_4=ingredient_4, measure_4=measure_4, ingredient_5=ingredient_5, measure_5=measure_5, ingredient_6=ingredient_6, measure_6=measure_6, ingredient_7=ingredient_7, measure_7=measure_7, ingredient_8=ingredient_8, measure_8=measure_8, ingredient_9=ingredient_9, measure_9=measure_9, ingredient_10=ingredient_10, measure_10=measure_10, instructions=instructions, image_url=image_url, drink_type=drink_type, user_id=current_user.id)
+
+            db.session.add(new_drink)
+            db.session.commit()
             
             flash(f"{drink_name} has been created!")
             return redirect(url_for('index'))
+
     return render_template('create_drink.html', form=form)
+
+
+
+@app.route('/profile/<user_id>')
+def profile_view(user_id):
+    user = db.session.get(User, user_id)
+    if not user:
+        flash('That user does not exist')
+        return redirect(url_for('index'))
+    cocktails = Cocktail.query.filter_by(user_id=current_user.id).all()
+    # Above query generates a list of cocktail objects. Since there's only 1 in the DB so far we start with just 1
+    cocktails_first = cocktails[0]
+    return render_template('profile.html', user=user, cocktails_first=cocktails_first)
