@@ -9,14 +9,26 @@
 {% endblock %}
 
 {% block content %}
-<div class="col">
-    <div class="card text-center">
-        <div class="card-body">
-            <h2 class="card-title">{{ user.username }}</h2>
-            <h4 class="card-title">{{ user.email }}</h4>
-            <h5 class="card-title">Member Since: {{ user.date_created.strftime('%A %B %d, %Y at %I:%M%p') }}</h5>
+    <div class="col-12 d-flex justify-content-center">
+        <div class="card text-center">
+            <div class="card-body">
+                <h2 class="card-title">{{ user.username }}</h2>
+                <h4 class="card-title">{{ user.email }}</h4>
+                <h5 class="card-title">Member Since: {{ user.date_created.strftime('%A %B %d, %Y at %I:%M%p') }}</h5>
+            </div>
         </div>
     </div>
-</div>
-
+    <div class="col-12">
+        <h1>{{ user.username }}'s Cocktails</h1>
+    </div>
+        {% for c in cocktails %}
+        <div class="card m-3" style="width: 18rem; background-color: black; color: #B0B0B0">
+            <img src="{{ c.image_url }}" class="card-img-top" alt="Image of a cocktail">
+            <div class="card-body">
+                <h5 class="card-title">{{ c.drink_name }}</h5>
+                <a href="{{ url_for('user_cocktail_view', user_id=current_user.id, drink_id=c.id) }}" class="btn btn-2">View Details</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 {% endblock %}

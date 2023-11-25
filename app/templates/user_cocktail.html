@@ -1,40 +1,106 @@
 {% extends 'base.html' %}
 
-{% block title %}User Cocktail{% endblock %}
+{% block title %}{{ cocktail.drink_name }}{% endblock %}
 
 
 {% block header %}
-    <h1>User Cocktail</h1>
+    <h1>{{ cocktail.drink_name }}</h1>
 {% endblock %}
 
 {% block content %}
     <div class="col-12 d-flex justify-content-center cocktailViewImg">
-        <img src="{{ res.get('strDrinkThumb' )}}" alt="">
+        <img src="{{ cocktail.image_url }}" alt="">
     </div>
     <div class="col-12 d-flex justify-content-center">
-        <h4 class="mt-3">Type - {{ res.get('strAlcoholic') }}</h4>
+        <h4 class="mt-3">Type - {{ 'Alcoholic' if cocktail.drink_type else 'Non-Alcoholic' }}</h4>
     </div>
     <div class="col-12 d-flex justify-content-center">
-        <h4 class="mt-3">Served in - {{ res.get('strGlass') }}</h4>
+        <h4 class="mt-3">Served in - {{ cocktail.glass_type }}</h4>
     </div>
     <div class="col-12 d-flex justify-content-center mt-5">
         <h4 class = 'me-3'>Ingredients</h4>
         <ul>
-            {% for k,v in res.items() %}
-                {% if k in ingredients %}
-                    <li>{{ v }}</li>
-                {% endif %}
-            {% endfor %}
+            <li>{{ cocktail.ingredient_1 }}</li>
+            <li>{{ cocktail.ingredient_2 }}</li>
+            {% if cocktail.ingredient_3 %}
+            <li>{{ cocktail.ingredient_3 }}</li>
+            {% endif %}
+            {% if cocktail.ingredient_4 %}
+            <li>{{ cocktail.ingredient_4 }}</li>
+            {% endif %}
+            {% if cocktail.ingredient_5 %}
+            <li>{{ cocktail.ingredient_5 }}</li>
+            {% endif %}
+            {% if cocktail.ingredient_6 %}
+            <li>{{ cocktail.ingredient_6 }}</li>
+            {% endif %}
+            {% if cocktail.ingredient_7 %}
+            <li>{{ cocktail.ingredient_7 }}</li>
+            {% endif %}
+            {% if cocktail.ingredient_8 %}
+            <li>{{ cocktail.ingredient_8 }}</li>
+            {% endif %}
+            {% if cocktail.ingredient_9 %}
+            <li>{{ cocktail.ingredient_9 }}</li>
+            {% endif %}
+            {% if cocktail.ingredient_10 %}
+            <li>{{ cocktail.ingredient_10 }}</li>
+            {% endif %}
         </ul>
         <ul style="list-style-type: none;">
-            {% for k, v in res.items() %}
-                {% if k in measures %}
-                    <li>{{ v }}</li>
-                {% endif %}
-            {% endfor %}
+            <li>{{ cocktail.measure_1 }}</li>
+            <li>{{ cocktail.measure_2 }}</li>
+            {% if cocktail.measure_3 %}
+            <li>{{ cocktail.measure_3 }}</li>
+            {% endif %}
+            {% if cocktail.measure_4 %}
+            <li>{{ cocktail.measure_4 }}</li>
+            {% endif %}
+            {% if cocktail.measure_5 %}
+            <li>{{ cocktail.measure_5 }}</li>
+            {% endif %}
+            {% if cocktail.measure_6 %}
+            <li>{{ cocktail.measure_6 }}</li>
+            {% endif %}
+            {% if cocktail.measure_7 %}
+            <li>{{ cocktail.measure_7 }}</li>
+            {% endif %}
+            {% if cocktail.measure_8 %}
+            <li>{{ cocktail.measure_8 }}</li>
+            {% endif %}
+            {% if cocktail.measure_9 %}
+            <li>{{ cocktail.measure_9 }}</li>
+            {% endif %}
+            {% if cocktail.measure_10 %}
+            <li>{{ cocktail.measure_10 }}</li>
+            {% endif %}
         </ul>
     </div>
     <div class="col-12 d-flex justify-content-center mt-5">
-        <h4>Instructions: {{ res.get('strInstructions') }}</h4>
+        <h4>Instructions: {{ cocktail.instructions }}</h4>
     </div>
+    <div class="col-12 d-flex justify-content-center mt-5">
+        <h5>By {{ user.username }}</h5>
+    </div>
+        {% if current_user == cocktail.author %}
+        <button type="button" class="btn btn-danger w-25" data-bs-toggle="modal" data-bs-target="#deletePostModal">Delete</button>
+                <!-- Modal for Delete Button -->
+                        <div class="modal fade" id="deletePostModal" tabindex="-1" aria-labelledby="deletePostModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="color: black;">
+                                        <h1 class="modal-title fs-5" id="deletePostModalLabel" style="color: black;">Delete {{ cocktail.drink_name }}?</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body" style="color: black;">
+                                        Are you sure you want to delete {{ cocktail.drink_name }}? This action cannot be undone.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <a class="btn btn-danger" href="{{ url_for('delete_drink', user_id=current_user.id, drink_id=cocktail.id) }}">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+        {% endif %}
 {% endblock %}

@@ -76,7 +76,7 @@ def cocktails():
     return render_template('cocktails.html', data=data)
 
 
-
+# Route for viewing 3rd party API connected cocktails
 @app.route('/cocktails/<drink_id>')
 def cocktail_view(drink_id):
     response = requests.get(f'https://www.thecocktaildb.com/api/json/v2/9973533/lookup.php?i={drink_id}')
@@ -87,7 +87,7 @@ def cocktail_view(drink_id):
     return render_template('cocktail.html', res=res, ingredients=ingredients, measures=measures)
 
 
-
+# For creating cocktails local to this application's database
 @app.route('/create-drink', methods=['GET', 'POST'])
 @login_required
 def create_drink():
@@ -130,14 +130,43 @@ def create_drink():
     return render_template('create_drink.html', form=form)
 
 
-
+# Show's information about the user as well as any drinks they've submitted to the database
 @app.route('/profile/<user_id>')
 def profile_view(user_id):
     user = db.session.get(User, user_id)
     if not user:
         flash('That user does not exist')
         return redirect(url_for('index'))
-    cocktails = Cocktail.query.filter_by(user_id=current_user.id).all()
-    # Above query generates a list of cocktail objects. Since there's only 1 in the DB so far we start with just 1
-    cocktails_first = cocktails[0]
-    return render_template('profile.html', user=user, cocktails_first=cocktails_first)
+    cocktails = db.session.execute(db.select(Cocktail).where(Cocktail.user_id==current_user.id).order_by(db.desc(Cocktail.date_created))).scalars().all()
+    return render_template('profile.html', user=user, cocktails=cocktails)
+
+
+# Specific view for user-submitted cocktail by user_id and drink_id
+@app.route('/profile/<user_id>/<drink_id>')
+def user_cocktail_view(user_id, drink_id):
+    user = db.session.get(User, user_id)
+    cocktail = db.session.get(Cocktail, drink_id)
+    if not cocktail:
+        flash('That drink does not exist')
+        return redirect(url_for('index'))
+    return render_template('user_cocktail.html', user=user, cocktail=cocktail)
+
+
+# Route for user to delete a drink that they've submitted
+@app.route('/profile/<user_id>/<drink_id>/delete')
+@login_required
+def delete_drink(user_id, drink_id):
+    user = db.session.get(User, user_id)
+    cocktail = db.session.get(Cocktail, drink_id)
+    if not cocktail:
+        flash('That drink does not exist')
+        return redirect(url_for('index'))
+    if current_user != cocktail.author:
+        flash('You can only delete cocktails you have created!')
+        return redirect(url_for('user_cocktail.html', user_id=user.id, drink_id=cocktail.id))
+    
+    db.session.delete(cocktail)
+    db.session.commit()
+
+    flash(f"{cocktail.drink_name} has been deleted")
+    return redirect(url_for('index'))
