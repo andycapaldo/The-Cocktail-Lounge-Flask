@@ -80,10 +80,13 @@
         <h4>Instructions: {{ cocktail.instructions }}</h4>
     </div>
     <div class="col-12 d-flex justify-content-center mt-5">
-        <h5>By {{ user.username }}</h5>
+        <h5>By {{ cocktail.author.username }}</h5>
     </div>
         {% if current_user == cocktail.author %}
-        <button type="button" class="btn btn-danger w-25" data-bs-toggle="modal" data-bs-target="#deletePostModal">Delete</button>
+        <div class="col-12 d-flex justify-content-center mt-3">
+            <a href="{{ url_for('edit_drink', user_id=current_user.id, drink_id=cocktail.id) }}" class="btn btn-success w-25 me-5">Edit</a>
+            <button type="button" class="btn btn-danger w-25 ms-5" data-bs-toggle="modal" data-bs-target="#deletePostModal">Delete</button>
+        </div>
                 <!-- Modal for Delete Button -->
                         <div class="modal fade" id="deletePostModal" tabindex="-1" aria-labelledby="deletePostModalLabel" aria-hidden="true">
                             <div class="modal-dialog">

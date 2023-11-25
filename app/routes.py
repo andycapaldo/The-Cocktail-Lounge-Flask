@@ -153,7 +153,7 @@ def user_cocktail_view(user_id, drink_id):
 
 
 # Route for user to delete a drink that they've submitted
-@app.route('/profile/<user_id>/<drink_id>/delete')
+@app.route('/profile/<user_id>/<drink_id>/delete', methods=['GET'])
 @login_required
 def delete_drink(user_id, drink_id):
     user = db.session.get(User, user_id)
@@ -163,10 +163,54 @@ def delete_drink(user_id, drink_id):
         return redirect(url_for('index'))
     if current_user != cocktail.author:
         flash('You can only delete cocktails you have created!')
-        return redirect(url_for('user_cocktail.html', user_id=user.id, drink_id=cocktail.id))
+        return redirect(url_for('user_cocktail_view', user_id=user.id, drink_id=cocktail.id))
     
     db.session.delete(cocktail)
     db.session.commit()
 
     flash(f"{cocktail.drink_name} has been deleted")
     return redirect(url_for('index'))
+
+
+@app.route('/profile/<user_id>/<drink_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_drink(user_id, drink_id):
+    user = db.session.get(User, user_id)
+    cocktail = db.session.get(Cocktail, drink_id)
+    if not cocktail:
+        flash('That drink does not exist')
+        return redirect(url_for('index'))
+    if current_user != cocktail.author:
+        flash('You can only edit cocktails you have created!')
+        return redirect(url_for('user_cocktail.html', user_id=user.id, drink_id=cocktail.id))
+    
+    form = DrinkForm()
+
+    if form.validate_on_submit():
+        cocktail.drink_name = form.drink_name.data
+        cocktail.glass_type = form.glass_type.data
+        cocktail.ingredient_1 = form.ingredient_1.data
+        cocktail.measure_1 = form.measure_1.data
+        cocktail.ingredient_2 = form.ingredient_2.data
+        cocktail.measure_2 = form.measure_2.data
+        cocktail.ingredient_3 = form.ingredient_3.data
+        cocktail.measure_3 = form.measure_3.data
+        cocktail.instructions = form.instructions.data
+        cocktail.image_url = form.image_url.data
+        cocktail.drink_type = form.drink_type.data
+
+        db.session.commit()
+        flash(f"{cocktail.drink_name} has been edited.", 'success')
+        return redirect(url_for('index'))
+    
+    form.drink_name.data = cocktail.drink_name
+    form.glass_type.data = cocktail.glass_type
+    form.ingredient_1.data = cocktail.ingredient_1
+    form.measure_1.data = cocktail.measure_1
+    form.ingredient_2.data = cocktail.ingredient_2
+    form.measure_2.data = cocktail.measure_2
+    form.ingredient_3.data = cocktail.measure_3
+    form.instructions.data = cocktail.instructions
+    form.image_url.data = cocktail.image_url
+    form.drink_type.data = cocktail.drink_type
+    return render_template('edit_drink.html', user=user, cocktail=cocktail, form=form)
