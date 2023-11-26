@@ -1,15 +1,67 @@
+from flask import request
 from . import api
 from app import db
 from app.models import User, Cocktail, Comment
+from .auth import basic_auth, token_auth
 
-# Get all user created cocktails
+# Endpoint to get token - requires username/password
+@api.route('/token')
+@basic_auth.login_required
+def get_token():
+    auth_user = basic_auth.current_user()
+    token = auth_user.get_token()
+    return {'token': token}
+
+
+# Endpoint to create a new User
+@api.route('/users', methods=['POST'])
+def create_user():
+    if not request.is_json:
+        return {'error': 'Your content type must be application/json'}, 400
+    
+    data = request.json
+
+    required_fields = ['firstName', 'lastName', 'email', 'username', 'password']
+    missing_fields = []
+    for field in required_fields:
+        if field not in data:
+            missing_fields.append(field)
+        if missing_fields:
+            return {'error': f"{', '.join(missing_fields)} must be in the request body"}, 400
+        
+    first_name = data.get('firstName')
+    last_name = data.get('lastName')
+    email = data.get('email')
+    username = data.get('username')
+    password = data.get('password')
+
+    check_user = db.session.execute(db.select(User).where( (User.username==username) | (User.email==email) )).scalars().all()
+    if check_user:
+        return {'error': 'A user with that username and/or email already exists'}, 400
+    
+    new_user = User(first_name=first_name, last_name=last_name, email=email, username=username, password=password)
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    return new_user.to_dict(), 201
+
+
+# Endpoint to get user based on token
+@api.route('/users/me', methods={'GET'})
+@token_auth.login_required
+def get_me():
+    current_user = token_auth.current_user()
+    return current_user.to_dict()
+
+# Endpoint to get all user created cocktails
 @api.route('/cocktails', methods=['GET'])
 def get_cocktails():
     cocktails = db.session.execute(db.select(Cocktail)).scalars().all()
     return [cocktail.to_dict() for cocktail in cocktails]
 
 
-# Get a user created cocktail by ID
+# Endpoint to get a user created cocktail by ID
 @api.route('/cocktails/<cocktail_id>')
 def get_cocktail(cocktail_id):
     cocktail = db.session.get(Cocktail, cocktail_id)
@@ -18,17 +70,71 @@ def get_cocktail(cocktail_id):
     return cocktail.to_dict()
 
 
-# Get all comments on user created cocktails
+# Endpoint to get all comments on user created cocktails
 @api.route('/comments')
 def get__comments():
     comments = db.session.execute(db.select(Comment)).scalars().all()
     return [comment.to_dict() for comment in comments]
 
 
-# Get all comments for a specific cocktail
+# Endpoint to get all comments for a specific cocktail
 @api.route('/comments/<cocktail_id>')
 def get_comments_unique(cocktail_id):
     comments = Comment.query.where(Comment.cocktail_id==cocktail_id)
     if not comments:
         return {'error': f"No comments exist for cocktail with an ID of {cocktail_id}"}, 404
     return [comment.to_dict() for comment in comments]
+
+
+# Endpoint to create a new cocktail
+@api.route('/cocktails', methods=['POST'])
+@token_auth.login_required
+def create_drink():
+    if not request.is_json:
+        return {'error': 'Your content type must be application/json'}, 400
+    
+    data = request.json
+
+    required_fields = ['drinkName', 'glassType', 'instructions', 'imageUrl', 'drinkType', 'ingredient1', 'measure1', 'ingredient2', 'measure2']
+    missing_fields = []
+    for field in required_fields:
+        if field not in data:
+            missing_fields.append(field)
+    if missing_fields:
+        return {'error': f"{', '.join(missing_fields)} must be in the request body"}, 400
+    drink_name = data.get('drinkName')
+    glass_type = data.get('glassType')
+    instructions = data.get('instructions')
+    image_url = data.get('imageUrl')
+    drink_type = data.get('drinkType')
+    ingredient_1 = data.get('ingredient1')
+    measure_1 = data.get('measure1')
+    ingredient_2 = data.get('ingredient2')
+    measure_2 = data.get('measure2')
+    ingredient_3 = data.get('ingredient3')
+    measure_3 = data.get('measure3')
+    ingredient_4 = data.get('ingredient4')
+    measure_4 = data.get('measure4')
+    ingredient_5 = data.get('ingredient5')
+    measure_5 = data.get('measure5')
+    ingredient_6 = data.get('ingredient6')
+    measure_6 = data.get('measure6')
+    ingredient_7 = data.get('ingredient7')
+    measure_7 = data.get('measure7')
+    ingredient_8 = data.get('ingredient8')
+    measure_8 = data.get('measure8')
+    ingredient_9 = data.get('ingredient9')
+    measure_9 = data.get('measure9')
+    ingredient_10 = data.get('ingredient10')
+    measure_10 = data.get('measure10')
+
+    current_user = token_auth.current_user()
+
+    new_drink = Cocktail(drink_name=drink_name, glass_type=glass_type, instructions=instructions, image_url=image_url, drink_type=drink_type, ingredient_1=ingredient_1, measure_1=measure_1, ingredient_2=ingredient_2, measure_2=measure_2, ingredient_3=ingredient_3, measure_3=measure_3, ingredient_4=ingredient_4, measure_4=measure_4, ingredient_5=ingredient_5, measure_5=measure_5, ingredient_6=ingredient_6, measure_6=measure_6, ingredient_7=ingredient_7, measure_7=measure_7, ingredient_8=ingredient_8, measure_8=measure_8, ingredient_9=ingredient_9, measure_9=measure_9, ingredient_10=ingredient_10, measure_10=measure_10, user_id=current_user.id)
+    
+    db.session.add(new_drink)
+    db.session.commit()
+    return new_drink.to_dict(), 201
+
+
+

@@ -34,7 +34,7 @@ class User(db.Model, UserMixin):
         if self.token and self.token_expiration > now + timedelta(minutes=1):
             return self.token
         self.token = base64.b64encode(os.urandom(24)).decode('utf-8')
-        self.token_expiration = now + timedelta(days=1)
+        self.token_expiration = now + timedelta(days=365)
         db.session.commit()
         return self.token
     
