@@ -3,7 +3,7 @@ from app import app, db
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app.forms import SignUpForm, LoginForm, DrinkForm
-from app.models import User, Cocktail
+from app.models import User, Cocktail, Comment
 
 
 @app.route('/')
@@ -142,28 +142,26 @@ def profile_view(user_id):
 
 
 # Specific view for user-submitted cocktail by user_id and drink_id
-@app.route('/profile/<user_id>/<drink_id>')
-def user_cocktail_view(user_id, drink_id):
-    user = db.session.get(User, user_id)
+@app.route('/user-drinks/<drink_id>')
+def user_cocktail_view(drink_id):
     cocktail = db.session.get(Cocktail, drink_id)
     if not cocktail:
         flash('That drink does not exist')
         return redirect(url_for('index'))
-    return render_template('user_cocktail.html', user=user, cocktail=cocktail)
+    return render_template('user_cocktail.html', cocktail=cocktail)
 
 
 # Route for user to delete a drink that they've submitted
-@app.route('/profile/<user_id>/<drink_id>/delete', methods=['GET'])
+@app.route('/user-drinks/<drink_id>/delete', methods=['GET'])
 @login_required
-def delete_drink(user_id, drink_id):
-    user = db.session.get(User, user_id)
+def delete_drink(drink_id):
     cocktail = db.session.get(Cocktail, drink_id)
     if not cocktail:
         flash('That drink does not exist')
         return redirect(url_for('index'))
     if current_user != cocktail.author:
         flash('You can only delete cocktails you have created!')
-        return redirect(url_for('user_cocktail_view', user_id=user.id, drink_id=cocktail.id))
+        return redirect(url_for('user_cocktail_view',  drink_id=cocktail.id))
     
     db.session.delete(cocktail)
     db.session.commit()
@@ -172,17 +170,16 @@ def delete_drink(user_id, drink_id):
     return redirect(url_for('index'))
 
 
-@app.route('/profile/<user_id>/<drink_id>/edit', methods=['GET', 'POST'])
+@app.route('/user-drinks/<drink_id>/edit', methods=['GET', 'POST'])
 @login_required
-def edit_drink(user_id, drink_id):
-    user = db.session.get(User, user_id)
+def edit_drink(drink_id):
     cocktail = db.session.get(Cocktail, drink_id)
     if not cocktail:
         flash('That drink does not exist')
         return redirect(url_for('index'))
     if current_user != cocktail.author:
         flash('You can only edit cocktails you have created!')
-        return redirect(url_for('user_cocktail.html', user_id=user.id, drink_id=cocktail.id))
+        return redirect(url_for('user_cocktail.html', drink_id=cocktail.id))
     
     form = DrinkForm()
 
@@ -242,4 +239,23 @@ def edit_drink(user_id, drink_id):
     form.instructions.data = cocktail.instructions
     form.image_url.data = cocktail.image_url
     form.drink_type.data = cocktail.drink_type
-    return render_template('edit_drink.html', user=user, cocktail=cocktail, form=form)
+    return render_template('edit_drink.html', cocktail=cocktail, form=form)
+
+
+@app.route("/create-comment/<drink_id>", methods=["POST"])
+@login_required
+def create_comment(drink_id):
+    text = request.form.get('text')
+
+    if not text:
+        flash('Comment cannot be empty.', 'error')
+    else:
+        cocktail = Cocktail.query.filter_by(id=drink_id)
+        if cocktail:
+            comment = Comment(text=text, user_id=current_user.id, cocktail_id=drink_id)
+            db.session.add(comment)
+            db.session.commit()
+        else:
+            flash('That drink does not exist.')
+    
+    return redirect(url_for('index'))
