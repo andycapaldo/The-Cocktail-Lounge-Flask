@@ -1,6 +1,6 @@
 import requests
 from app import app, db
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from app.forms import SignUpForm, LoginForm, DrinkForm
 from app.models import User, Cocktail, Comment
@@ -137,7 +137,7 @@ def profile_view(user_id):
     if not user:
         flash('That user does not exist')
         return redirect(url_for('index'))
-    cocktails = db.session.execute(db.select(Cocktail).where(Cocktail.user_id==current_user.id).order_by(db.desc(Cocktail.date_created))).scalars().all()
+    cocktails = db.session.execute(db.select(Cocktail).where(Cocktail.user_id==user_id).order_by(db.desc(Cocktail.date_created))).scalars().all()
     return render_template('profile.html', user=user, cocktails=cocktails)
 
 
@@ -258,4 +258,20 @@ def create_comment(drink_id):
         else:
             flash('That drink does not exist.')
     
+    return redirect(url_for('index'))
+
+
+@app.route('/delete-comment/<comment_id>')
+@login_required
+def delete_comment(comment_id):
+    comment = Comment.query.filter_by(id=comment_id).first()
+
+    if not comment:
+        flash('Comment does not exist.', 'error')
+    elif current_user.id != comment.user_id and current_user.id != comment.cocktail_id.user_id:
+        flash('You do not have permission to delete this comment.', 'error')
+    else:
+        db.session.delete(comment)
+        db.session.commit()
+
     return redirect(url_for('index'))

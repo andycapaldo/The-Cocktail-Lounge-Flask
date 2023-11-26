@@ -82,6 +82,36 @@
     <div class="col-12 d-flex justify-content-center mt-5">
         <h5>By {{ cocktail.author.username }}</h5>
     </div>
+    {% if cocktail.comments|length > 0 %}
+        <div class="" id="comments-{{ cocktail.id }}">
+            <div class="card">
+                <div class="card-body" id="comments-expanded-{{cocktail.id}}">
+                    {% for comment in cocktail.comments %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <a href="{{ url_for('profile_view', user_id=comment.user_id) }}">{{ comment.author.username }}</a>
+                            {{ comment.text }}
+                        </div> 
+                        <div>
+                            <small class="text-muted">{{ comment.date_created.strftime('%A %B %d, %Y at %I:%M%p') }}</small>
+                            {% if current_user.id == comment.user_id or current_user.id == cocktail.user_id %}
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown"></button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="/delete-comment/{{ comment.id }}" class="dropdown-item">Delete</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+            </div>
+        </div>
+    {% else %}
+    <h4>No Comments</h4>
+    {% endif %}
     <div class="col-12 d-flex justify-content-center mt-5">
         <form class="input-group mb-3" method="POST" action="/create-comment/{{ cocktail.id }}">
             <input type="text" id="text" name="text" class="form-control" placeholder="Leave a comment"/>
