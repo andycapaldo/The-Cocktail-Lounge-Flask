@@ -38,6 +38,15 @@ class User(db.Model, UserMixin):
         db.session.commit()
         return self.token
     
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'firstName': self.first_name,
+            'lastName': self.last_name,
+            'email': self.email,
+            'username': self.username
+        }
+    
 @login.user_loader
 def get_user(user_id):
     return db.session.get(User, user_id)
@@ -77,6 +86,38 @@ class Cocktail(db.Model):
 
     def __repr__(self):
         return f"<Cocktail{self.id}|{self.drink_name}>"
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'drinkName': self.drink_name,
+            'glassType': self.glass_type,
+            'dateCreated': self.date_created,
+            'author': self.author.to_dict(),
+            'instructions': self.instructions,
+            'imageUrl': self.image_url,
+            'drinkType': self.drink_type,
+            'ingredient1': self.ingredient_1,
+            'measure1': self.measure_1,
+            'ingredient2': self.ingredient_2,
+            'measure2': self.measure_2,
+            'ingredient3': self.ingredient_3,
+            'measure3': self.measure_3,
+            'ingredient4': self.ingredient_4,
+            'measure4': self.measure_4,
+            'ingredient5': self.ingredient_5,
+            'measure5': self.measure_5,
+            'ingredient6': self.ingredient_6,
+            'measure6': self.measure_6,
+            'ingredient7': self.ingredient_7,
+            'measure7': self.measure_7,
+            'ingredient8': self.ingredient_8,
+            'measure8': self.measure_8,
+            'ingredient9': self.ingredient_9,
+            'measure9': self.measure_9,
+            'ingredient10': self.ingredient_10,
+            'measure10': self.measure_10,
+        }
 
 
 class Comment(db.Model):
@@ -88,3 +129,11 @@ class Comment(db.Model):
 
     def __repr__(self):
         return f"<Comment{self.id}|{self.cocktail_id}>"
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "text": self.text,
+            "author": self.author.to_dict(),
+            "cocktail_id": self.cocktail_id
+        }
