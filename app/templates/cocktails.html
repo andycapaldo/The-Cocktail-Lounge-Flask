@@ -4,8 +4,9 @@
 
 {% block header %}
 
-<h1>All Cocktails</h1>
-
+<h1>Cocktail Database</h1>
+<h5>{{ data|length }} Cocktails as of {{ today }}</h5>
+<small>Data Sourced from <a href="https://www.thecocktaildb.com/">TheCocktailDB</a></small>
 {% endblock %}
 
 {% block content %}

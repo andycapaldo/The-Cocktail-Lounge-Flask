@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}User Submitted Cocktails{% endblock %}
+
+{% block header %}
+<h1>User Submitted Cocktails</h1>
+{% endblock %}
+
+{% block content %}
+{% for c in cocktails %}
+    <div class="card m-3" style="width: 18rem; background-color: black; color: #B0B0B0">
+        <img src="{{ c.image_url }}" class="card-img-top" alt="Image of a cocktail">
+        <div class="card-body">
+            <h5 class="card-title">{{ c.drink_name }}</h5>
+            <a href="{{ url_for('user_cocktail_view', drink_id=c.id) }}" class="btn btn-2">View Details</a>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}

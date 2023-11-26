@@ -1,4 +1,5 @@
 import requests
+from datetime import date
 from app import app, db
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
@@ -66,6 +67,8 @@ def logout():
     flash('You have successfully logged out')
     return redirect(url_for('index'))
 
+
+# Route for viewing all 3rd party API cocktails
 @app.route('/cocktails')
 def cocktails():
     alcoholic= requests.get('https://www.thecocktaildb.com/api/json/v2/9973533/filter.php?a=Alcoholic')
@@ -73,10 +76,11 @@ def cocktails():
     drinks_one = alcoholic.json()['drinks']
     drinks_two = non_alcoholic.json()['drinks']
     data = sorted((drinks_one + drinks_two), key=lambda x: x['strDrink'])
-    return render_template('cocktails.html', data=data)
+    today = date.today()
+    return render_template('cocktails.html', data=data, today=today)
 
 
-# Route for viewing 3rd party API connected cocktails
+# Route for viewing a specific cocktail from the 3rd party API
 @app.route('/cocktails/<drink_id>')
 def cocktail_view(drink_id):
     response = requests.get(f'https://www.thecocktaildb.com/api/json/v2/9973533/lookup.php?i={drink_id}')
@@ -141,7 +145,16 @@ def profile_view(user_id):
     return render_template('profile.html', user=user, cocktails=cocktails)
 
 
-# Specific view for user-submitted cocktail by user_id and drink_id
+
+# View for all user submitted cocktails
+@app.route('/user-drinks', methods=['GET'])
+def user_cocktails_view():
+    cocktails = db.session.execute(db.select(Cocktail).order_by(db.desc(Cocktail.drink_name))).scalars().all()
+    print([c.image_url for c in cocktails])
+    return render_template('user_cocktails.html', cocktails=cocktails)
+
+
+# Specific view for user-submitted cocktail by drink_id
 @app.route('/user-drinks/<drink_id>')
 def user_cocktail_view(drink_id):
     cocktail = db.session.get(Cocktail, drink_id)
