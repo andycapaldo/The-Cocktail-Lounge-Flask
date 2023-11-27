@@ -54,6 +54,34 @@ def get_me():
     current_user = token_auth.current_user()
     return current_user.to_dict()
 
+
+# Endpoint to edit user info using token auth
+@api.route('/users/<user_id>', methods=['PUT'])
+@token_auth.login_required
+def edit_user(user_id):
+    if not request.is_json:
+        return {'error': 'Your content-type must be application/json'}, 400
+    user = db.session.get(User, user_id)
+    current_user = token_auth.current_user()
+    if user != current_user:
+        return {'error': 'You do not have permission to edit this user'}, 403
+    
+    data = request.json
+    required_fields = ['email']
+    missing_fields = []
+    for field in required_fields:
+        if field not in data:
+            missing_fields.append(field)
+    if missing_fields:
+        return {'error': f"{', '.join(missing_fields)} must be in the request body"}, 400
+    
+    for field in data:
+        if field in {'email'}:
+            setattr(user, 'email', data[field])
+    db.session.commit()
+    return user.to_dict()
+
+
 # Endpoint to get all user created cocktails
 @api.route('/cocktails', methods=['GET'])
 def get_cocktails():
