@@ -160,3 +160,21 @@ def edit_cocktail(cocktail_id):
     db.session.commit()
     return cocktail.to_dict()
     
+
+
+
+# Endpoint to delete an existing cocktail
+@api.route('/cocktails/<cocktail_id>', methods=["DELETE"])
+@token_auth.login_required
+def delete_cocktail(cocktail_id):
+    cocktail = db.session.get(Cocktail, cocktail_id)
+    if cocktail is None:
+        return {'error': f"Cocktail with an ID of {cocktail_id} does not exist."}, 404
+    
+    current_user = token_auth.current_user()
+    if cocktail.author != current_user:
+        return {'error': 'You do not have permission to edit this cocktail.'}, 403
+    
+    db.session.delete(cocktail)
+    db.session.commit()
+    return {'success': f"{cocktail.drink_name} has been deleted."}
