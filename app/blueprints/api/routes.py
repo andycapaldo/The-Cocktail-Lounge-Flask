@@ -71,19 +71,44 @@ def get_cocktail(cocktail_id):
 
 
 # Endpoint to get all comments on user created cocktails
-@api.route('/comments')
+@api.route('/comments', methods=['GET'])
 def get__comments():
     comments = db.session.execute(db.select(Comment)).scalars().all()
     return [comment.to_dict() for comment in comments]
 
 
 # Endpoint to get all comments for a specific cocktail
-@api.route('/comments/<cocktail_id>')
+@api.route('/comments/<cocktail_id>', methods=['GET'])
 def get_comments_unique(cocktail_id):
     comments = Comment.query.where(Comment.cocktail_id==cocktail_id)
     if not comments:
         return {'error': f"No comments exist for cocktail with an ID of {cocktail_id}."}, 404
     return [comment.to_dict() for comment in comments]
+
+
+# Endpoint to get a specific comment by comment ID
+@api.route('/comment/<comment_id>', methods=['GET'])
+def get_comment(comment_id):
+    comment = db.session.get(Comment, comment_id)
+    if not comment:
+        return {'error': f"Comment with an ID of {comment_id} does not exist."}, 404
+    return comment.to_dict()
+
+
+# Endpoint to delete a comment
+@api.route('/comment/<comment_id>', methods=['DELETE'])
+@token_auth.login_required
+def delete_comment(comment_id):
+    comment = db.session.get(Comment, comment_id)
+    if not comment:
+        return {'error': f"Comment with an ID of {comment_id} does not exist."}, 404
+    current_user = token_auth.current_user()
+    if comment.author != current_user:
+        return {'error': 'You do not have permission to delete this comment.'}, 403
+    
+    db.session.delete(comment)
+    db.session.commit()
+    return {'success': f"Comment #{comment.id} has been deleted."}
 
 
 # Endpoint to create a new cocktail
@@ -173,7 +198,7 @@ def delete_cocktail(cocktail_id):
     
     current_user = token_auth.current_user()
     if cocktail.author != current_user:
-        return {'error': 'You do not have permission to edit this cocktail.'}, 403
+        return {'error': 'You do not have permission to delete this cocktail.'}, 403
     
     db.session.delete(cocktail)
     db.session.commit()

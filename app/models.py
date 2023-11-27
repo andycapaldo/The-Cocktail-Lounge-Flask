@@ -135,5 +135,5 @@ class Comment(db.Model):
             "id": self.id,
             "text": self.text,
             "author": self.author.to_dict(),
-            "cocktail_id": self.cocktail_id
+            "cocktail": self.cocktail.to_dict() if self.cocktail else None
         }
