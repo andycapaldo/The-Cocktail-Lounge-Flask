@@ -3,6 +3,7 @@ from . import api
 from app import db
 from app.models import User, Cocktail, Comment
 from .auth import basic_auth, token_auth
+from .helpers import camel_to_snake
 
 # Endpoint to get token - requires username/password
 @api.route('/token')
@@ -251,7 +252,7 @@ def edit_cocktail(cocktail_id):
     data = request.json
     for field in data:
         if field in {'drinkName', 'glassType', 'instructions', 'imageUrl', 'drinkType', 'ingredient1', 'measure1', 'ingredient2', 'measure2', 'ingredient3', 'measure3', 'ingredient4', 'measure4', 'ingredient5', 'measure5', 'ingredient6', 'measure6', 'ingredient7', 'measure7', 'ingredient8', 'measure8', 'ingredient9', 'measure9', 'ingredient10', 'measure10'}:
-                setattr(cocktail, 'image_url', data[field])
+                setattr(cocktail, camel_to_snake(field), data[field])
 
     db.session.commit()
     return cocktail.to_dict()

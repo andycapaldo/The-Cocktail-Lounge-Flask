@@ -14,10 +14,10 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    cocktails = db.relationship('Cocktail', backref='author')
+    cocktails = db.relationship('Cocktail', backref='author', cascade='all, delete')
     token = db.Column(db.String(32), index=True, unique=True)
     token_expiration = db.Column(db.DateTime)
-    comments = db.relationship('Comment', backref='author', passive_deletes=True)
+    comments = db.relationship('Comment', backref='author', passive_deletes=True, cascade='all, delete')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -82,7 +82,7 @@ class Cocktail(db.Model):
     measure_9 = db.Column(db.String)
     ingredient_10 = db.Column(db.String)
     measure_10 = db.Column(db.String)
-    comments = db.relationship('Comment', backref='cocktail', passive_deletes=True)
+    comments = db.relationship('Comment', backref='cocktail', passive_deletes=True, cascade='all, delete')
 
     def __repr__(self):
         return f"<Cocktail{self.id}|{self.drink_name}>"
