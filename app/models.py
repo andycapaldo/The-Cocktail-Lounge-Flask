@@ -134,6 +134,6 @@ class Comment(db.Model):
         return {
             "id": self.id,
             "text": self.text,
-            "author": self.author.to_dict(),
+            "author": self.author.to_dict() if self.author else None,
             "cocktail": self.cocktail.to_dict() if self.cocktail else None
         }

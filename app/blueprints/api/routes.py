@@ -62,6 +62,8 @@ def edit_user(user_id):
     if not request.is_json:
         return {'error': 'Your content-type must be application/json'}, 400
     user = db.session.get(User, user_id)
+    if user is None:
+        return {'error': f"User with an ID of {user_id} does not exist."}, 404
     current_user = token_auth.current_user()
     if user != current_user:
         return {'error': 'You do not have permission to edit this user'}, 403
@@ -80,6 +82,22 @@ def edit_user(user_id):
             setattr(user, 'email', data[field])
     db.session.commit()
     return user.to_dict()
+
+
+# Endpoint to delete a user profile using token auth
+@api.route('/users/<user_id>', methods=['DELETE'])
+@token_auth.login_required
+def delete_user(user_id):
+    user = db.session.get(User, user_id)
+    if user is None:
+        return {'error': f"User with an ID of {user_id} does not exist."}, 404
+    
+    current_user = token_auth.current_user()
+    if user != current_user:
+        return {'error': 'You do not have permission to delete this user'}, 403
+    db.session.delete(user)
+    db.session.commit()
+    return {'success': f"{user.username} has been deleted."}
 
 
 # Endpoint to get all user created cocktails
@@ -121,6 +139,31 @@ def get_comment(comment_id):
     if not comment:
         return {'error': f"Comment with an ID of {comment_id} does not exist."}, 404
     return comment.to_dict()
+
+
+# Endpoint to create a comment on a specific cocktail
+@api.route('/comments/<cocktail_id>', methods=['POST'])
+@token_auth.login_required
+def create_comment(cocktail_id):
+    if not request.is_json:
+        return {'error': 'Your content-type must be application/json'}, 400
+    data = request.json
+
+    required_fields = ['text']
+    missing_fields = []
+    for field in required_fields:
+        if field not in data:
+            missing_fields.append(field)
+    if missing_fields:
+        return {'error': f"{', '.join(missing_fields)} must be in the request body"}, 400
+    
+    text = data.get('text')
+    current_user = token_auth.current_user()
+
+    new_comment = Comment(text=text, user_id=current_user.id, cocktail_id=cocktail_id)
+    db.session.add(new_comment)
+    db.session.commit()
+    return new_comment.to_dict(), 201
 
 
 # Endpoint to delete a comment
