@@ -175,7 +175,7 @@ def delete_comment(comment_id):
     if not comment:
         return {'error': f"Comment with an ID of {comment_id} does not exist."}, 404
     current_user = token_auth.current_user()
-    if comment.author != current_user:
+    if current_user.id != comment.user_id and current_user.id != comment.cocktail.user_id:
         return {'error': 'You do not have permission to delete this comment.'}, 403
     
     db.session.delete(comment)
