@@ -17,7 +17,7 @@ def get_token():
 @api.route('/users', methods=['POST'])
 def create_user():
     if not request.is_json:
-        return {'error': 'Your content type must be application/json'}, 400
+        return {'error': 'Your content type must be application/json.'}, 400
     
     data = request.json
 
@@ -27,7 +27,7 @@ def create_user():
         if field not in data:
             missing_fields.append(field)
         if missing_fields:
-            return {'error': f"{', '.join(missing_fields)} must be in the request body"}, 400
+            return {'error': f"{', '.join(missing_fields)} must be in the request body."}, 400
         
     first_name = data.get('firstName')
     last_name = data.get('lastName')
@@ -37,7 +37,7 @@ def create_user():
 
     check_user = db.session.execute(db.select(User).where( (User.username==username) | (User.email==email) )).scalars().all()
     if check_user:
-        return {'error': 'A user with that username and/or email already exists'}, 400
+        return {'error': 'A user with that username and/or email already exists.'}, 400
     
     new_user = User(first_name=first_name, last_name=last_name, email=email, username=username, password=password)
 
@@ -66,7 +66,7 @@ def get_cocktails():
 def get_cocktail(cocktail_id):
     cocktail = db.session.get(Cocktail, cocktail_id)
     if not cocktail:
-        return {'error': f'Cocktail with an ID of {cocktail_id} does not exist'}, 404
+        return {'error': f'Cocktail with an ID of {cocktail_id} does not exist.'}, 404
     return cocktail.to_dict()
 
 
@@ -82,7 +82,7 @@ def get__comments():
 def get_comments_unique(cocktail_id):
     comments = Comment.query.where(Comment.cocktail_id==cocktail_id)
     if not comments:
-        return {'error': f"No comments exist for cocktail with an ID of {cocktail_id}"}, 404
+        return {'error': f"No comments exist for cocktail with an ID of {cocktail_id}."}, 404
     return [comment.to_dict() for comment in comments]
 
 
@@ -91,7 +91,7 @@ def get_comments_unique(cocktail_id):
 @token_auth.login_required
 def create_drink():
     if not request.is_json:
-        return {'error': 'Your content type must be application/json'}, 400
+        return {'error': 'Your content type must be application/json.'}, 400
     
     data = request.json
 
@@ -101,7 +101,7 @@ def create_drink():
         if field not in data:
             missing_fields.append(field)
     if missing_fields:
-        return {'error': f"{', '.join(missing_fields)} must be in the request body"}, 400
+        return {'error': f"{', '.join(missing_fields)} must be in the request body."}, 400
     drink_name = data.get('drinkName')
     glass_type = data.get('glassType')
     instructions = data.get('instructions')
@@ -138,3 +138,25 @@ def create_drink():
 
 
 
+# Endpoint to edit an existing cocktail
+@api.route('/cocktails/<cocktail_id>', methods=['PUT'])
+@token_auth.login_required
+def edit_cocktail(cocktail_id):
+    if not request.is_json:
+        return {'error': 'Your content type must be application/json.'}, 400
+    
+    cocktail = db.session.get(Cocktail, cocktail_id)
+    if cocktail is None:
+        return {'error': f"Cocktail with an ID of {cocktail_id} does not exist."}, 404
+    
+    current_user = token_auth.current_user()
+    if cocktail.author != current_user:
+        return {'error': 'You do not have permission to edit this cocktail.'}, 403
+    data = request.json
+    for field in data:
+        if field in {'drinkName', 'glassType', 'instructions', 'imageUrl', 'drinkType', 'ingredient1', 'measure1', 'ingredient2', 'measure2', 'ingredient3', 'measure3', 'ingredient4', 'measure4', 'ingredient5', 'measure5', 'ingredient6', 'measure6', 'ingredient7', 'measure7', 'ingredient8', 'measure8', 'ingredient9', 'measure9', 'ingredient10', 'measure10'}:
+                setattr(cocktail, 'image_url', data[field])
+
+    db.session.commit()
+    return cocktail.to_dict()
+    
