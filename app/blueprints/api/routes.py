@@ -48,6 +48,15 @@ def create_user():
     return new_user.to_dict(), 201
 
 
+# Endpoint to get user based on user_id
+@api.route('/users/<user_id>', methods=['GET'])
+def get_user(user_id):
+    user = db.session.get(User, user_id)
+    if not user:
+        return {'error': f'User with an ID of {user_id} does not exist.'}, 404
+    return user.to_dict()
+
+
 # Endpoint to get user based on token
 @api.route('/users/me', methods={'GET'})
 @token_auth.login_required
